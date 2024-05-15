@@ -1,0 +1,11 @@
+PHONY: test-coverage
+test-coverage:
+	@echo "Running tests..."
+	go test -cover ./... -coverprofile=c.out
+	go tool cover -html=c.out -o coverage.html
+	rm -rf c.out
+
+.PHONY: test
+test:
+	@echo "Running tests..."
+	go test ./... -v
