@@ -4,6 +4,7 @@ test-coverage:
 	go test -cover ./... -coverprofile=c.out
 	go tool cover -html=c.out -o coverage.html
 	rm -rf c.out
+	open coverage.html
 
 .PHONY: test
 test:
