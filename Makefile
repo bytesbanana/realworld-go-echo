@@ -10,3 +10,9 @@ test-coverage:
 test:
 	@echo "Running tests..."
 	go test ./... -v
+
+.PHONY: run
+run:
+	@echo "Starting application..."
+	go run src/cmd/main.go
+
