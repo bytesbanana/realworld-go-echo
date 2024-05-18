@@ -1,9 +1,12 @@
 package service
 
 import (
-	"bytesbanana/realworld-go-echo/internal/adapter/dto"
 	"bytesbanana/realworld-go-echo/internal/core/port"
 )
+
+type UserService interface {
+	Register(req UserCreateRequest) (*UserResponse, error)
+}
 
 type userService struct {
 	ur port.UserRepository
@@ -15,12 +18,12 @@ func NewUserService(ur port.UserRepository) *userService {
 	}
 }
 
-func (s *userService) Register(email, username, password string) (*dto.UserResponse, error) {
+func (s *userService) Register(req UserCreateRequest) (*UserResponse, error) {
 
-	u, err := s.ur.CreateUser(email, username, password)
+	u, err := s.ur.CreateUser(req.User.Email, req.User.Username, req.User.Password)
 	if err != nil {
 		return nil, err
 	}
 
-	return dto.NewUserResponse(u), nil
+	return NewUserResponse(u), nil
 }

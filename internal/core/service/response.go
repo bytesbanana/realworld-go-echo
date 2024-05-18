@@ -1,4 +1,4 @@
-package dto
+package service
 
 import "bytesbanana/realworld-go-echo/internal/core/domain"
 

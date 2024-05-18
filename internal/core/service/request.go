@@ -1,4 +1,4 @@
-package handler
+package service
 
 type UserCreateRequest struct {
 	User struct {

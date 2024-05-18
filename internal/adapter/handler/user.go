@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytesbanana/realworld-go-echo/internal/core/service"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -8,13 +9,13 @@ import (
 
 func (h Handler) CreateUser(c echo.Context) error {
 
-	var req UserCreateRequest
+	var req service.UserCreateRequest
 
 	if err := c.Bind(&req); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
-	u, err := h.us.Register(req.User.Email, req.User.Username, req.User.Password)
+	u, err := h.us.Register(req)
 	if err != nil {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
