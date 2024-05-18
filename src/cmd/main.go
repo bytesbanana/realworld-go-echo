@@ -1,9 +1,9 @@
 package main
 
 import (
-	"bytesbanana/realworld-go-echo/internal/adapter/db"
-	"bytesbanana/realworld-go-echo/internal/adapter/handler"
-	"bytesbanana/realworld-go-echo/internal/core/service"
+	"bytesbanana/realworld-go-echo/src/internal/adapter/db"
+	"bytesbanana/realworld-go-echo/src/internal/adapter/handler"
+	"bytesbanana/realworld-go-echo/src/internal/core/service"
 	"encoding/json"
 	"log"
 

@@ -1,7 +1,7 @@
 package port
 
 import (
-	"bytesbanana/realworld-go-echo/internal/core/domain"
+	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 )
 
 type UserRepository interface {

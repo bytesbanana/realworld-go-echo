@@ -1,7 +1,7 @@
 package service
 
 import (
-	"bytesbanana/realworld-go-echo/internal/core/port"
+	"bytesbanana/realworld-go-echo/src/internal/core/port"
 )
 
 type UserService interface {

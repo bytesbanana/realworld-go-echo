@@ -1,6 +1,6 @@
 package service
 
-import "bytesbanana/realworld-go-echo/internal/core/domain"
+import "bytesbanana/realworld-go-echo/src/internal/core/domain"
 
 type UserResponse struct {
 	User struct {

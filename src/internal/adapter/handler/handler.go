@@ -1,6 +1,6 @@
 package handler
 
-import "bytesbanana/realworld-go-echo/internal/core/service"
+import "bytesbanana/realworld-go-echo/src/internal/core/service"
 
 type Handler struct {
 	us service.UserService
