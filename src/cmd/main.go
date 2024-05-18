@@ -41,7 +41,6 @@ func main() {
 
 	api := e.Group("/api")
 	dsn := "dbname=realworld host=localhost port=5432 user=postgres password=password sslmode=disable"
-	// dsn := ""
 
 	logger.Info("connecting to database")
 	dbx, err := sqlx.Open("postgres", dsn)
