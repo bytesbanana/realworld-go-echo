@@ -9,9 +9,13 @@ import (
 
 func (h Handler) CreateUser(c echo.Context) error {
 
-	var req service.UserCreateRequest
+	req := new(service.UserCreateRequest)
 
-	if err := c.Bind(&req); err != nil {
+	if err := c.Bind(req); err != nil {
+		return c.JSON(http.StatusBadRequest, err)
+	}
+
+	if err := c.Validate(req); err != nil {
 		return c.JSON(http.StatusBadRequest, err)
 	}
 
@@ -20,5 +24,5 @@ func (h Handler) CreateUser(c echo.Context) error {
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
-	return c.JSON(http.StatusOK, u)
+	return c.JSON(http.StatusCreated, u)
 }

@@ -3,9 +3,12 @@ package main
 import (
 	"bytesbanana/realworld-go-echo/src/internal/adapter/db"
 	"bytesbanana/realworld-go-echo/src/internal/adapter/handler"
+	v "bytesbanana/realworld-go-echo/src/internal/adapter/validator"
 	"bytesbanana/realworld-go-echo/src/internal/core/service"
 	"encoding/json"
 	"log"
+
+	"github.com/go-playground/validator/v10"
 
 	"github.com/jmoiron/sqlx"
 	"github.com/labstack/echo/v4"
@@ -23,6 +26,7 @@ func main() {
 	defer logger.Sync()
 
 	e := echo.New()
+	e.Validator = &v.CustomValidator{Validator: validator.New()}
 
 	e.Use(middleware.RequestLoggerWithConfig(
 		middleware.RequestLoggerConfig{

@@ -50,11 +50,11 @@ func TestUserSerive(t *testing.T) {
 		s := NewUserService(&StubUserRepository{})
 		assert.NotNil(s)
 
-		res, err := s.Register(UserCreateRequest{
+		res, err := s.Register(&UserCreateRequest{
 			User: struct {
-				Username string `json:"username"`
-				Email    string `json:"email"`
-				Password string `json:"password"`
+				Username string `json:"username" validate:"required"`
+				Email    string `json:"email" validate:"required,email"`
+				Password string `json:"password" validate:"required"`
 			}{
 				Username: "testuser",
 				Email:    "testuser@test.com",
@@ -66,8 +66,8 @@ func TestUserSerive(t *testing.T) {
 		assert.NotNil(res)
 		assert.Equal("testuser", res.User.Username)
 		assert.Equal("testuser@test.com", res.User.Email)
-		assert.Equal("", res.User.Bio)
-		assert.Equal("", res.User.Image)
+		assert.Nil(res.User.Bio)
+		assert.Nil(res.User.Image)
 
 	})
 
@@ -78,11 +78,11 @@ func TestUserSerive(t *testing.T) {
 
 		assert.NotNil(s)
 
-		res, err := s.Register(UserCreateRequest{
+		res, err := s.Register(&UserCreateRequest{
 			User: struct {
-				Username string `json:"username"`
-				Email    string `json:"email"`
-				Password string `json:"password"`
+				Username string `json:"username" validate:"required"`
+				Email    string `json:"email" validate:"required,email"`
+				Password string `json:"password" validate:"required"`
 			}{
 				Username: "testuser",
 				Email:    "testuser@test.com",

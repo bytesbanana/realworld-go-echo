@@ -5,7 +5,7 @@ import (
 )
 
 type UserService interface {
-	Register(req UserCreateRequest) (*UserResponse, error)
+	Register(req *UserCreateRequest) (*UserResponse, error)
 }
 
 type userService struct {
@@ -18,7 +18,7 @@ func NewUserService(ur port.UserRepository) *userService {
 	}
 }
 
-func (s *userService) Register(req UserCreateRequest) (*UserResponse, error) {
+func (s *userService) Register(req *UserCreateRequest) (*UserResponse, error) {
 
 	u, err := s.ur.CreateUser(req.User.Email, req.User.Username, req.User.Password)
 	if err != nil {
