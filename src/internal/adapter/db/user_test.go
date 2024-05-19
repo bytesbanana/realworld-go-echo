@@ -33,12 +33,29 @@ func TestCreateUser(t *testing.T) {
 		assert.NotEmpty(u.HashedPassword)
 	})
 
-	t.Run("given user should error", func(t *testing.T) {
+	t.Run("given user should error when unable to insert to data", func(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
 		assert := assert.New(t)
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 
 		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnError(errors.New("unable to insert user"))
+
+		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+		ur := NewUserRepository(sqlxDB)
+
+		u, err := ur.CreateUser("testuser@test.com", "username", "password")
+		assert.Error(err)
+		assert.Nil(u)
+	})
+
+	t.Run("given user should error when unable to map struct", func(t *testing.T) {
+		mockDB, mock, err := sqlmock.New()
+		assert := assert.New(t)
+		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
+		rows := sqlmock.NewRows([]string{"id", "email2", "username2", "hashed_password"}).
+			AddRow(1, "testuser@test.com", "username", "password")
+
+		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnRows(rows)
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
 		ur := NewUserRepository(sqlxDB)
