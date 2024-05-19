@@ -30,13 +30,13 @@ func (ur *userRepository) CreateUser(email, username, password string) (*domain.
 		return nil, err
 	}
 
+	u := new(domain.User)
+
 	if rows.Next() {
-		u := new(domain.User)
 		if err := rows.StructScan(&u); err != nil {
 			return nil, err
 		}
-		return u, nil
 	}
 
-	return nil, nil
+	return u, nil
 }
