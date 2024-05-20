@@ -5,6 +5,7 @@ import (
 	"bytesbanana/realworld-go-echo/src/internal/adapter/handler"
 	v "bytesbanana/realworld-go-echo/src/internal/adapter/validator"
 	"bytesbanana/realworld-go-echo/src/internal/core/service"
+	"bytesbanana/realworld-go-echo/src/internal/migration"
 	"encoding/json"
 	"log"
 
@@ -57,6 +58,8 @@ func main() {
 
 	}
 	defer dbx.Close()
+
+	migration.ApplyMigrations(dbx.DB)
 
 	ur := db.NewUserRepository(dbx)
 	us := service.NewUserService(ur)
