@@ -51,6 +51,11 @@ func main() {
 	if err != nil {
 		logger.Fatal("failed to connect to database", zap.Error(err))
 	}
+
+	if err := dbx.Ping(); err != nil {
+		logger.Fatal("failed to ping database", zap.Error(err))
+
+	}
 	defer dbx.Close()
 
 	ur := db.NewUserRepository(dbx)
