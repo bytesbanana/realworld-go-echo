@@ -7,6 +7,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestCreateUser(t *testing.T) {
@@ -16,10 +17,12 @@ func TestCreateUser(t *testing.T) {
 		assert := assert.New(t)
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 
+		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		assert.NoError(err)
 		rows := sqlmock.NewRows([]string{"id", "email", "username", "hashed_password"}).
-			AddRow(1, "testuser@test.com", "username", "password")
+			AddRow(1, "testuser@test.com", "username", hashedPassword)
 
-		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnRows(rows)
+		mock.ExpectQuery("INSERT INTO users").WillReturnRows(rows)
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
 		ur := NewUserRepository(sqlxDB)
@@ -31,6 +34,7 @@ func TestCreateUser(t *testing.T) {
 		assert.Equal(u.Email, "testuser@test.com")
 		assert.Equal(u.Username, "username")
 		assert.NotEmpty(u.HashedPassword)
+		assert.NotEqual("password", u.HashedPassword)
 	})
 
 	t.Run("given user should error when unable to insert to data", func(t *testing.T) {

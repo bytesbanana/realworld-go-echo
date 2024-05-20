@@ -4,6 +4,7 @@ import (
 	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 
 	"github.com/jmoiron/sqlx"
+	"golang.org/x/crypto/bcrypt"
 )
 
 type userRepository struct {
@@ -20,11 +21,16 @@ func NewUserRepository(db *sqlx.DB) *userRepository {
 
 func (ur *userRepository) CreateUser(email, username, password string) (*domain.User, error) {
 
+	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
+	if err != nil {
+		return nil, err
+	}
+
 	rows, err := ur.db.NamedQuery("INSERT INTO users (email, username, hashed_password) VALUES (:email, :username, :password) RETURNING *",
 		map[string]interface{}{
 			"email":    email,
 			"username": username,
-			"password": password,
+			"password": hashedPassword,
 		})
 	if err != nil {
 		return nil, err
