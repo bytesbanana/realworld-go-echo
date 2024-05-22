@@ -21,5 +21,5 @@ func (s *userService) Register(req *UserCreateRequest) (*UserResponse, error) {
 		return nil, err
 	}
 
-	return NewUserResponse(u), nil
+	return NewUserResponse(u)
 }

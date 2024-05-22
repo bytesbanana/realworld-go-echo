@@ -48,6 +48,8 @@ func TestRegisterUserService(t *testing.T) {
 		assert.NotNil(res)
 		assert.Equal("testuser", res.User.Username)
 		assert.Equal("testuser@test.com", res.User.Email)
+		assert.NotNil(res.User.Token, "token should not be null")
+		assert.NotEmpty(res.User.Token, "token should not be empty")
 		assert.Nil(res.User.Bio)
 		assert.Nil(res.User.Image)
 

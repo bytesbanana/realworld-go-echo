@@ -1,44 +1,21 @@
 package handler
 
 import (
-	"bytesbanana/realworld-go-echo/src/internal/core/service"
 	"errors"
 	"net/http"
 	"net/http/httptest"
 	"strings"
 	"testing"
 
+	"github.com/kinbiko/jsonassert"
 	"github.com/labstack/echo/v4"
 	"github.com/stretchr/testify/assert"
 )
 
-type StubUserSerivce struct {
-	err error
-}
-
-func (s *StubUserSerivce) Register(req *service.UserCreateRequest) (*service.UserResponse, error) {
-	if s.err != nil {
-		return nil, s.err
-	}
-
-	return &service.UserResponse{
-		User: struct {
-			Username string  `json:"username"`
-			Email    string  `json:"email"`
-			Bio      *string `json:"bio"`
-			Image    *string `json:"image"`
-		}{
-			Username: req.User.Username,
-			Email:    req.User.Email,
-			Bio:      nil,
-			Image:    nil,
-		},
-	}, nil
-}
-
 func TestUserHandler(t *testing.T) {
 
 	assert := assert.New(t)
+	ja := jsonassert.New(t)
 
 	t.Run("given user information should return 201", func(t *testing.T) {
 
@@ -64,6 +41,7 @@ func TestUserHandler(t *testing.T) {
 			"user": {
 				"email": "jake@jake.jake",
 				"username": "jake",
+				"token": "<<PRESENCE>>",
 				"bio": null,
 				"image": null
 			}
@@ -71,7 +49,7 @@ func TestUserHandler(t *testing.T) {
 
 		if assert.NoError(h.CreateUser(c)) {
 			assert.Equal(http.StatusCreated, rec.Code)
-			assert.JSONEq(expectedResponse, rec.Body.String())
+			ja.Assertf(rec.Body.String(), expectedResponse)
 		}
 	})
 
