@@ -1,6 +1,7 @@
 package db
 
 import (
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
 	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 
 	"github.com/jmoiron/sqlx"
@@ -24,6 +25,11 @@ func (ur *userRepository) CreateUser(email, username, password string) (*domain.
 	hashedPassword, err := bcrypt.GenerateFromPassword([]byte(password), bcrypt.DefaultCost)
 	if err != nil {
 		return nil, err
+	}
+
+	_, err = ur.GetUserByEmail(email)
+	if err == nil {
+		return nil, errs.ErrAlreadyBeenTaken
 	}
 
 	rows, err := ur.db.NamedQuery("INSERT INTO users (email, username, hashed_password) VALUES (:email, :username, :password) RETURNING *",

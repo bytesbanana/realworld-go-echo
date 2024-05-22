@@ -1,6 +1,8 @@
 package db
 
 import (
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
+	"database/sql"
 	"errors"
 	"testing"
 
@@ -21,6 +23,7 @@ func TestCreateUser(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "email", "username", "hashed_password"}).
 			AddRow(1, "testuser@test.com", "username", hashedPassword)
 
+		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(sql.ErrNoRows)
 		mock.ExpectQuery("INSERT INTO users").WillReturnRows(rows)
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
@@ -40,6 +43,7 @@ func TestCreateUser(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 
+		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(sql.ErrNoRows)
 		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnError(errors.New("unable to insert user"))
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
@@ -56,6 +60,7 @@ func TestCreateUser(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "email2", "username2", "hashed_password"}).
 			AddRow(1, "testuser@test.com", "username", "password")
 
+		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(sql.ErrNoRows)
 		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnRows(rows)
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
@@ -64,6 +69,25 @@ func TestCreateUser(t *testing.T) {
 		u, err := ur.CreateUser("testuser@test.com", "username", "password")
 		assert.Error(err)
 		assert.Nil(u)
+	})
+
+	t.Run("giver user information should return error when user already exists", func(t *testing.T) {
+		mockDB, mock, err := sqlmock.New()
+		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
+
+		columns := []string{"id", "email", "username", "hashed_password"}
+		rows := sqlmock.NewRows(columns)
+		rows.AddRow(1, "testuser@test.com", "username", "password")
+
+		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(rows)
+
+		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+		ur := NewUserRepository(sqlxDB)
+
+		u, err := ur.CreateUser("testuser@test.com", "username", "password")
+		assert.Error(err)
+		assert.Nil(u)
+		assert.EqualError(err, errs.ErrAlreadyBeenTaken.Error())
 	})
 }
 

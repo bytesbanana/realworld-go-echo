@@ -1,7 +1,9 @@
 package handler
 
 import (
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
 	"bytesbanana/realworld-go-echo/src/internal/core/service"
+	"errors"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -20,7 +22,12 @@ func (h Handler) CreateUser(c echo.Context) error {
 	}
 
 	u, err := h.us.Register(req)
+
 	if err != nil {
+		if errors.Is(err, errs.ErrAlreadyBeenTaken) {
+			return c.JSON(http.StatusUnprocessableEntity, errs.ParseError(err))
+		}
+
 		return c.JSON(http.StatusInternalServerError, err)
 	}
 
