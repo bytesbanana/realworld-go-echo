@@ -11,10 +11,9 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
-
+	assert := assert.New(t)
 	t.Run("given user should create user", func(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
-		assert := assert.New(t)
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 
 		hashedPassword, err := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
@@ -39,7 +38,6 @@ func TestCreateUser(t *testing.T) {
 
 	t.Run("given user should error when unable to insert to data", func(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
-		assert := assert.New(t)
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 
 		mock.ExpectQuery("INSERT INTO users").WithArgs("testuser@test.com", "username", "password").WillReturnError(errors.New("unable to insert user"))
@@ -54,7 +52,6 @@ func TestCreateUser(t *testing.T) {
 
 	t.Run("given user should error when unable to map struct", func(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
-		assert := assert.New(t)
 		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
 		rows := sqlmock.NewRows([]string{"id", "email2", "username2", "hashed_password"}).
 			AddRow(1, "testuser@test.com", "username", "password")
@@ -67,5 +64,32 @@ func TestCreateUser(t *testing.T) {
 		u, err := ur.CreateUser("testuser@test.com", "username", "password")
 		assert.Error(err)
 		assert.Nil(u)
+	})
+}
+
+func TestGetUserByEmail(t *testing.T) {
+	assert := assert.New(t)
+
+	t.Run("given existing email should return user", func(t *testing.T) {
+		mockDB, mock, err := sqlmock.New()
+		assert.NoError(err, "an error '%s' was not expected when opening a stub database connection", err)
+		rows := sqlmock.NewRows([]string{"id", "email", "username", "hashed_password", "bio", "image"}).
+			AddRow(1, "testuser@test.com", "username", "hashed_password", nil, nil)
+
+		mock.ExpectQuery("SELECT (.+) FROM users").WithArgs("testuser@test.com").WillReturnRows(rows)
+
+		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
+		ur := NewUserRepository(sqlxDB)
+
+		u, err := ur.GetUserByEmail("testuser@test.com")
+		assert.NoError(err)
+		assert.NotNil(u)
+		assert.Equal(1, u.ID)
+		assert.Equal("testuser@test.com", u.Email)
+		assert.Equal("username", u.Username)
+		assert.Equal("hashed_password", u.HashedPassword)
+		assert.Nil(u.Bio)
+		assert.Nil(u.Image)
+
 	})
 }

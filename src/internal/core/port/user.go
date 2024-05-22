@@ -6,4 +6,5 @@ import (
 
 type UserRepository interface {
 	CreateUser(email, username, password string) (*domain.User, error)
+	GetUserByEmail(email string) (*domain.User, error)
 }

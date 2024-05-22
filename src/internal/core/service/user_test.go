@@ -29,6 +29,19 @@ func (s *StubUserRepository) CreateUser(email, username, password string) (*doma
 	}, nil
 }
 
+func (s *StubUserRepository) GetUserByEmail(email string) (*domain.User, error) {
+	if s.err != nil {
+		return nil, s.err
+	}
+
+	return &domain.User{
+		ID:             1,
+		Email:          email,
+		Username:       "testuser",
+		HashedPassword: "password",
+	}, nil
+}
+
 func TestUserSerive(t *testing.T) {
 
 	assert := assert.New(t)
