@@ -4,10 +4,6 @@ import (
 	"bytesbanana/realworld-go-echo/src/internal/core/port"
 )
 
-type UserService interface {
-	Register(req *UserCreateRequest) (*UserResponse, error)
-}
-
 type userService struct {
 	ur port.UserRepository
 }
