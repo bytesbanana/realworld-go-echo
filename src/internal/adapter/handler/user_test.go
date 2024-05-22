@@ -1,6 +1,7 @@
 package handler
 
 import (
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -89,6 +90,34 @@ func TestUserHandler(t *testing.T) {
 
 		if assert.NoError(h.CreateUser(c)) {
 			assert.Equal(http.StatusBadRequest, rec.Code)
+		}
+	})
+
+	t.Run("given user information should return 422", func(t *testing.T) {
+
+		rec, c := setup(func() *http.Request {
+			userJSON := `{
+			"user": {
+				"email": "jake@test.com",
+				"username": "jake",
+				"password": "password"
+			}
+		}`
+			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(userJSON))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+			return req
+		})
+
+		userService := &StubUserSerivce{err: errs.ErrAlreadyBeenTaken}
+		h := New(userService)
+
+		if assert.NoError(h.CreateUser(c)) {
+			expectedResponse := `{
+				"errors": { "email": [ "has already been taken"]}
+			  }`
+			assert.Equal(http.StatusUnprocessableEntity, rec.Code)
+			assert.JSONEq(expectedResponse, rec.Body.String())
 		}
 	})
 
