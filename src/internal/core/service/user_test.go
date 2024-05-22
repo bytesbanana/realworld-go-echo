@@ -42,7 +42,7 @@ func (s *StubUserRepository) GetUserByEmail(email string) (*domain.User, error) 
 	}, nil
 }
 
-func TestUserSerive(t *testing.T) {
+func TestRegisterUserService(t *testing.T) {
 
 	assert := assert.New(t)
 
