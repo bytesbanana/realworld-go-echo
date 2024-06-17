@@ -1,0 +1,14 @@
+GET https://example.com/topics/1
+
+###
+
+POST http://localhost:1323/api/users
+content-type: application/json
+
+{
+  "user": {
+    "username": "jakob10",
+    "email": "jakob10@test.com",
+    "password": "password"
+  }
+}

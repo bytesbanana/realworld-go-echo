@@ -14,7 +14,7 @@ import (
 )
 
 func TestUserHandler(t *testing.T) {
-
+	t.Parallel()
 	assert := assert.New(t)
 	ja := jsonassert.New(t)
 

@@ -13,6 +13,7 @@ import (
 )
 
 func TestCreateUser(t *testing.T) {
+	t.Parallel()
 	assert := assert.New(t)
 	t.Run("given user should create user", func(t *testing.T) {
 		mockDB, mock, err := sqlmock.New()
