@@ -1,4 +1,4 @@
-PHONY: test-coverage
+.PHONY: test-coverage
 test-coverage:
 	@echo "Running tests..."
 	go test -cover ./... -coverprofile=c.out
