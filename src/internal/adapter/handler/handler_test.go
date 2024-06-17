@@ -4,7 +4,9 @@ import (
 	"net/http"
 	"net/http/httptest"
 
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
 	cv "bytesbanana/realworld-go-echo/src/internal/adapter/validator"
+	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 	"bytesbanana/realworld-go-echo/src/internal/core/service"
 
 	"github.com/go-playground/validator/v10"
@@ -23,12 +25,19 @@ func setup(buildRequest func() *http.Request) (*httptest.ResponseRecorder, echo.
 }
 
 type StubUserSerivce struct {
-	err error
+	err   error
+	users []domain.User
 }
 
 func (s *StubUserSerivce) Register(req *service.UserCreateRequest) (*service.UserResponse, error) {
 	if s.err != nil {
 		return nil, s.err
+	}
+
+	for _, user := range s.users {
+		if user.Email == req.User.Email {
+			return nil, errs.ErrAlreadyBeenTaken
+		}
 	}
 
 	return &service.UserResponse{

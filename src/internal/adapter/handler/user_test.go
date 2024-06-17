@@ -1,7 +1,7 @@
 package handler
 
 import (
-	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
+	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 	"errors"
 	"net/http"
 	"net/http/httptest"
@@ -109,7 +109,13 @@ func TestUserHandler(t *testing.T) {
 			return req
 		})
 
-		userService := &StubUserSerivce{err: errs.ErrAlreadyBeenTaken}
+		userService := &StubUserSerivce{users: []domain.User{
+			{
+				Email:          "jake@test.com",
+				Username:       "jake",
+				HashedPassword: "password",
+			},
+		}}
 		h := New(userService)
 
 		if assert.NoError(h.CreateUser(c)) {
