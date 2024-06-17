@@ -23,7 +23,7 @@ func TestCreateUser(t *testing.T) {
 		rows := sqlmock.NewRows([]string{"id", "email", "username", "hashed_password"}).
 			AddRow(1, "testuser@test.com", "username", hashedPassword)
 
-		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnError(sql.ErrNoRows)
+		mock.ExpectQuery("SELECT (.+) FROM users").WillReturnRows(sqlmock.NewRows([]string{}))
 		mock.ExpectQuery("INSERT INTO users").WillReturnRows(rows)
 
 		sqlxDB := sqlx.NewDb(mockDB, "sqlmock")
