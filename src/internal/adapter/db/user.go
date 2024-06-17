@@ -27,8 +27,12 @@ func (ur *userRepository) CreateUser(email, username, password string) (*domain.
 		return nil, err
 	}
 
-	_, err = ur.GetUserByEmail(email)
-	if err == nil {
+	oldUser, err := ur.GetUserByEmail(email)
+	if err != nil {
+		return nil, err
+	}
+
+	if oldUser != nil {
 		return nil, errs.ErrAlreadyBeenTaken
 	}
 
