@@ -18,7 +18,7 @@ func (h Handler) CreateUser(c echo.Context) error {
 	}
 
 	if err := c.Validate(req); err != nil {
-		return c.JSON(http.StatusBadRequest, err)
+		return c.JSON(http.StatusBadRequest, errs.ParseError((err)))
 	}
 
 	u, err := h.us.Register(req)
