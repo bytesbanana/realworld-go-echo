@@ -13,6 +13,7 @@ type ErrorResponse struct {
 
 var (
 	ErrAlreadyBeenTaken = errors.New("has already been taken")
+	ErrUnAuthorized     = errors.New("unauthorized")
 )
 
 const (

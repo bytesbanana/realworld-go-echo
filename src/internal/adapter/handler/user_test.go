@@ -13,7 +13,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestUserHandler(t *testing.T) {
+func TestCreateUserHandler(t *testing.T) {
 	t.Parallel()
 	assert := assert.New(t)
 	ja := jsonassert.New(t)
@@ -152,4 +152,71 @@ func TestUserHandler(t *testing.T) {
 			assert.Equal(http.StatusInternalServerError, rec.Code)
 		}
 	})
+}
+
+func TestLoginUserHandler(t *testing.T) {
+	t.Parallel()
+
+	assert := assert.New(t)
+
+	ja := jsonassert.New(t)
+
+	t.Run("given valid login user request should return 200", func(t *testing.T) {
+		rec, c := setup(func() *http.Request {
+			loginJSON := `{
+				"user":{
+					"email": "jake@jake.jake",
+					"password": "jakejake"
+				}
+			}`
+			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(loginJSON))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+			return req
+		})
+
+		userService := &StubUserSerivce{
+			users: []domain.User{
+				{Email: "jake@jake.jake", Username: "jake", HashedPassword: "jakejake"},
+			},
+		}
+		h := New(userService)
+
+		if assert.NoError(h.LoginUser(c)) {
+			assert.Equal(http.StatusOK, rec.Code)
+			expectedResponse := `{
+				"user": {
+					"email": "jake@jake.jake",
+					"username": "jake",
+					"token": "<<PRESENCE>>",
+					"bio": null,
+					"image": null
+				}
+			}`
+			ja.Assertf(rec.Body.String(), expectedResponse)
+		}
+	})
+
+	t.Run("given invalid login user request should return 401", func(t *testing.T) {
+		rec, c := setup(func() *http.Request {
+			loginJSON := `{
+				"user":{
+					"email": "jake@jake.jake",
+					"password": "jakejake"
+				}
+			}`
+			req := httptest.NewRequest(http.MethodPost, "/", strings.NewReader(loginJSON))
+			req.Header.Set(echo.HeaderContentType, echo.MIMEApplicationJSON)
+
+			return req
+		})
+
+		userService := &StubUserSerivce{}
+		h := New(userService)
+
+		if assert.NoError(h.LoginUser(c)) {
+			assert.Equal(http.StatusUnauthorized, rec.Code)
+		}
+	})
+
 }

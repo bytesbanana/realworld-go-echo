@@ -1,6 +1,7 @@
 package service
 
 import (
+	"bytesbanana/realworld-go-echo/src/internal/adapter/errs"
 	"bytesbanana/realworld-go-echo/src/internal/core/port"
 )
 
@@ -22,4 +23,18 @@ func (s *userService) Register(req *UserCreateRequest) (*UserResponse, error) {
 	}
 
 	return NewUserResponse(u)
+}
+
+func (s *userService) Login(req *UserLoginRequest) (*UserResponse, error) {
+
+	u, err := s.ur.GetUserByEmail(req.User.Email)
+	if err != nil {
+		return nil, err
+	}
+
+	if u.CheckPassword(req.User.Password) {
+		return NewUserResponse(u)
+	}
+
+	return nil, errs.ErrUnAuthorized
 }

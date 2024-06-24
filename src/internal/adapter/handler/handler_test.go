@@ -56,3 +56,31 @@ func (s *StubUserSerivce) Register(req *service.UserCreateRequest) (*service.Use
 		},
 	}, nil
 }
+
+func (s *StubUserSerivce) Login(req *service.UserLoginRequest) (*service.UserResponse, error) {
+
+	for _, u := range s.users {
+
+		if u.Email == req.User.Email && req.User.Password == u.HashedPassword {
+			return &service.UserResponse{
+				User: struct {
+					Username string  `json:"username"`
+					Email    string  `json:"email"`
+					Token    string  `json:"token"`
+					Bio      *string `json:"bio"`
+					Image    *string `json:"image"`
+				}{
+					Username: u.Username,
+					Email:    u.Email,
+					Token:    "jwt.token",
+					Bio:      nil,
+					Image:    nil,
+				},
+			}, nil
+
+		}
+
+	}
+
+	return nil, errs.ErrUnAuthorized
+}

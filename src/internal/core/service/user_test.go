@@ -11,7 +11,7 @@ import (
 	"github.com/stretchr/testify/assert"
 )
 
-func TestRegisterUserService(t *testing.T) {
+func TestUserService(t *testing.T) {
 	t.Parallel()
 
 	assert := assert.New(t)
@@ -78,6 +78,30 @@ func TestRegisterUserService(t *testing.T) {
 		assert.Error(err)
 		assert.Nil(res)
 
+	})
+
+	t.Run("should login user", func(t *testing.T) {
+		s := NewUserService(&StubUserRepository{})
+		assert.NotNil(s)
+
+		res, err := s.Login(&UserLoginRequest{
+			User: struct {
+				Email    string `json:"email" validate:"required,email"`
+				Password string `json:"password" validate:"required"`
+			}{
+				Email:    "testuser@test.com",
+				Password: "password",
+			},
+		})
+
+		assert.NoError(err)
+		assert.NotNil(res)
+		assert.Equal("testuser", res.User.Username)
+		assert.Equal("testuser@test.com", res.User.Email)
+		assert.NotNil(res.User.Token, "token should not be null")
+		assert.NotEmpty(res.User.Token, "token should not be empty")
+		assert.Nil(res.User.Bio)
+		assert.Nil(res.User.Image)
 	})
 
 }

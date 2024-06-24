@@ -7,3 +7,10 @@ type UserCreateRequest struct {
 		Password string `json:"password" validate:"required"`
 	} `json:"user" validate:"required"`
 }
+
+type UserLoginRequest struct {
+	User struct {
+		Email    string `json:"email" validate:"required,email"`
+		Password string `json:"password" validate:"required"`
+	} `json:"user" validate:"required"`
+}
