@@ -66,6 +66,7 @@ func main() {
 	h := handler.New(us)
 
 	api.POST("/users", h.CreateUser)
+	api.POST("/users/login", h.LoginUser)
 
 	data, err := json.MarshalIndent(e.Routes(), "", "  ")
 	if err != nil {
