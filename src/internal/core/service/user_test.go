@@ -2,6 +2,7 @@ package service
 
 import (
 	"bytesbanana/realworld-go-echo/src/internal/adapter/db"
+	"bytesbanana/realworld-go-echo/src/internal/core/domain"
 	"errors"
 
 	"testing"
@@ -9,6 +10,7 @@ import (
 	"github.com/DATA-DOG/go-sqlmock"
 	"github.com/jmoiron/sqlx"
 	"github.com/stretchr/testify/assert"
+	"golang.org/x/crypto/bcrypt"
 )
 
 func TestUserService(t *testing.T) {
@@ -81,7 +83,14 @@ func TestUserService(t *testing.T) {
 	})
 
 	t.Run("should login user", func(t *testing.T) {
-		s := NewUserService(&StubUserRepository{})
+		hashPwd, _ := bcrypt.GenerateFromPassword([]byte("password"), bcrypt.DefaultCost)
+		s := NewUserService(&StubUserRepository{
+			users: []domain.User{{
+				Username:       "testuser",
+				Email:          "testuser@test.com",
+				HashedPassword: string(hashPwd),
+			}},
+		})
 		assert.NotNil(s)
 
 		res, err := s.Login(&UserLoginRequest{

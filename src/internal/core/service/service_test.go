@@ -1,9 +1,13 @@
 package service
 
-import "bytesbanana/realworld-go-echo/src/internal/core/domain"
+import (
+	"bytesbanana/realworld-go-echo/src/internal/core/domain"
+	"errors"
+)
 
 type StubUserRepository struct {
-	err error
+	users []domain.User
+	err   error
 }
 
 func (s *StubUserRepository) CreateUser(email, username, password string) (*domain.User, error) {
@@ -24,10 +28,11 @@ func (s *StubUserRepository) GetUserByEmail(email string) (*domain.User, error) 
 		return nil, s.err
 	}
 
-	return &domain.User{
-		ID:             1,
-		Email:          email,
-		Username:       "testuser",
-		HashedPassword: "password",
-	}, nil
+	for _, u := range s.users {
+		if u.Email == email {
+			return &u, nil
+		}
+	}
+
+	return nil, errors.New("User not found")
 }
